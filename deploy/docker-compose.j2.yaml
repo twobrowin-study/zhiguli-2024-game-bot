@@ -1,0 +1,56 @@
+version: '3.9'
+
+x-logging:
+  &default-logging
+  driver: "json-file"
+  options:
+    max-size: "500m"
+    max-file: "2"
+
+services:
+  game:
+    image: twobrowin/zhiguli-2024-game-bot:1.0.0
+    logging: *default-logging
+    ports:
+      - target:    5432
+        published: {{ secrets.postgres.port }}
+        protocol:  tcp
+        mode:      host
+      - target:    9000
+        published: {{ secrets.minio.port_api }}
+        protocol:  tcp
+        mode:      host
+      - target:    9001
+        published: {{ secrets.minio.port_ui }}
+        protocol:  tcp
+        mode:      host
+    volumes:
+      - data:/var/opt/game
+
+      - "{{ letsencrypt_path }}/live/{{ secrets.server_name }}/fullchain.pem:/minio-certs/public.crt"
+      - "{{ letsencrypt_path }}/live/{{ secrets.server_name }}/privkey.pem:/minio-certs/private.key"
+
+      - "{{ letsencrypt_path }}/live/{{ secrets.server_name }}/fullchain.pem:/pg-certs/server.crt"
+      - "{{ letsencrypt_path }}/live/{{ secrets.server_name }}/privkey.pem:/pg-certs/server.key"
+    environment:
+      TZ: "Europe/Moscow"
+      START_SERVICES: "true"
+
+      MINIO_CERTDIR: "/minio-certs"
+      MINIO_HOST:    "{{ secrets.server_name }}:{{ secrets.minio.port_api }}"
+
+      PG_SSL: "on"
+      PG_CERTDIR: "/pg-certs"
+
+      TOKEN:  "{{ secrets.tg_api }}"
+
+      PG_USER:     "{{ secrets.postgres.user }}"
+      PG_PASSWORD: "{{ secrets.postgres.password }}"
+
+      MINIO_ROOT_USER:     "{{ secrets.minio.user }}"
+      MINIO_ROOT_PASSWORD: "{{ secrets.minio.password }}"
+    deploy:
+      replicas: 1
+
+volumes:
+  data:

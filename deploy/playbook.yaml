@@ -1,0 +1,30 @@
+---
+#############################################################################
+#      0) Взять секреты из vault и добавить SSH ключи в known_hosts         #
+#############################################################################
+
+- name: Pull secrets from vault
+  hosts: all
+  gather_facts: false
+  tags:
+    - always
+  roles:
+    - role: bmstu.vats.init
+      vault_path_secrets:
+        - boxed-bots/data/main,infrastructure-secrets.yaml
+        - boxed-bots/data/zhiguli-2024-game-bot,secrets.yaml
+
+#############################################################################
+#                       1) Запуск сервиса                                   #
+#############################################################################
+
+- name: Run bot service
+  hosts: managers
+  tags:
+    - deploy
+  roles:
+    - role: bmstu.vats.generic_deploy
+      compose_template_path: docker-compose.j2.yaml
+      stack_name:  zhiguli-2024-game-bot
+      stack_prune: false
+      workdir:     "{{ home }}/zhiguli-2024-game-bot"

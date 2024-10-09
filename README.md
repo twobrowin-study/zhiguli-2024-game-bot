@@ -1,12 +1,33 @@
-# Игровой бот для игры Манчкин и Драконы
+# Игровой бот для игры Жигули в ДОЛ Бауманец 2024
 
-Это набор телеграм ботов, которые поставляются в одном контейнере с postgres и minio для хранения данных
+Телеграм бот, который поставляется в одном контейнере с postgres и minio для хранения данных.
+
+Предназначен для ведения игры Жигули в ДОЛ Бауманец 2024г.
+
+Бот поддерживает следующие функции:
+ - Вызов на бой (уведомление в группу команды)
+ - Покупку или отжим территории (уведомление в группу команды)
+ - Показывание текущего состояния территорий
+
+## Инциализация окружения
+
+```bash
+poetry install
+poetry shell
+pre-commit install
+```
+
+## Проверка кода
+```bash
+ruff check --fix
+ruff format
+pyright
+```
 
 ## Сборка контейнера
 
 ```bash
-docker-compose build
-docker-compose push
+docker compose build --push
 ```
 
 ## Локальная сборка и отладка
@@ -15,24 +36,10 @@ docker-compose push
 
 Следует скопировать `.env.example` в файл `.env` и заполнить недостающие поля или изменить под текущее окружение.
 
-Для того чтобы запустить БД и Minio для отладки (не запускать бота в контейнере) следует указать параметр `START_SERVICES=false` и выполнить `docker-compose up`.
-
-Установка окружения:
+Для того чтобы запустить БД и Minio для отладки (не запускать бота в контейнере) следует указать параметр `START_SERVICES=false` и выполнить `docker compose up`.
 
 ```bash
-poetry install
-```
-
-Запуск окружения:
-
-```bash
-poetry shell
-```
-
-Запуск ботов:
-
-```bash
-python src/*_bot/main.py
+python -m src.main
 ```
 
 ## Локальная отладка контейнера
@@ -40,5 +47,27 @@ python src/*_bot/main.py
 Следует скопировать `.env.example` в файл `.env` и заполнить недостающие поля или изменить под текущее окружение.
 
 ```bash
-docker-compose up
+docker compose up
+```
+
+## Развёртывание
+
+### Предвариательные требования
+
+Установить коллекцию vats:
+```bash
+ansible-galaxy install -r deploy/requirements.yml
+```
+
+### Доступ по ssh
+
+После подготовки возможно получить доступ к машинам при помощи команды:
+```bash
+ansible -i deploy/inventory.yaml all --module-name include_role --args name=bmstu.vats.ssh_connection
+```
+
+### Запуск бота
+
+```bash
+ansible-playbook deploy/playbook.yaml -i deploy/inventory.yaml -t deploy
 ```

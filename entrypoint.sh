@@ -38,13 +38,7 @@ if [ "${START_SERVICES}" = "true" ]; then
   # # Game Master: launch
   # ########################################
   echo "Starting Bots..."
-  exec start-stop-daemon --start --chuid "${BOT_MASTER_USER}:${BOT_MASTER_USER}"   --exec "${GAME_HOME}/box-bot" -- master_bot  1 &
-  exec start-stop-daemon --start --chuid "${BOT_COLOR_USER}:${BOT_COLOR_USER}"     --exec "${GAME_HOME}/box-bot" -- color_bot   1 &
-  exec start-stop-daemon --start --chuid "${BOT_DOORS_USER}:${BOT_DOORS_USER}"     --exec "${GAME_HOME}/box-bot" -- doors_bot   1 &
-  exec start-stop-daemon --start --chuid "${BOT_GOSSIP_USER}:${BOT_GOSSIP_USER}"   --exec "${GAME_HOME}/box-bot" -- gossip_bot  1 &
-  exec start-stop-daemon --start --chuid "${BOT_HERO_USER}:${BOT_HERO_USER}"       --exec "${GAME_HOME}/box-bot" -- hero_bot    1 &
-  exec start-stop-daemon --start --chuid "${BOT_STAFF_USER}:${BOT_STAFF_USER}"     --exec "${GAME_HOME}/box-bot" -- staff_bot   1 &
-  exec start-stop-daemon --start --chuid "${BOT_STATION_USER}:${BOT_STATION_USER}" --exec "${GAME_HOME}/box-bot" -- station_bot 1 &
+  exec start-stop-daemon --start --chuid "${BOT_STATION_USER}:${BOT_STATION_USER}" --exec "${GAME_HOME}/box-bot" -- 1 &
 fi
 
 while :; do

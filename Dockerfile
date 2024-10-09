@@ -9,13 +9,13 @@ RUN apt-get install software-properties-common -y \
  && add-apt-repository ppa:deadsnakes/ppa -y \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y python3.12-full python3-pip
 
-RUN pip install poetry==1.7.1
+RUN pip install poetry==1.8.2
 
 ENV GAME_HOME="/opt/docker-game"
 
 WORKDIR ${GAME_HOME}
 
-COPY pyproject.toml poetry.lock poetry.toml ./
+COPY pyproject.toml poetry.lock ./
 RUN poetry config virtualenvs.in-project true && \
     poetry install --no-root --no-cache --no-interaction
 
@@ -54,7 +54,7 @@ RUN apt-get update \
  && rm -rf ${PG_HOME} \
  && rm -rf /var/lib/apt/lists/*
 
-ENV MINIO_RELEASE="RELEASE.2024-04-18T19-09-19Z" \
+ENV MINIO_RELEASE="RELEASE.2024-09-22T00-33-43Z" \
     MINIO_DATADIR=${GAME_DATA}/minio \
     MINIO_BINARY=/sbin/minio \
     MINIO_USER=minio
@@ -93,9 +93,7 @@ RUN useradd -ms /bin/bash ${BOT_MASTER_USER} && \
 
 ADD  src    src/
 ADD  config config/
-COPY pyproject.docker.toml ./pyproject.toml
-
-RUN ${VIRTUAL_ENV}/bin/pip install -e .
+ADD  data   data/
 
 COPY runtime/      ./
 COPY entrypoint.sh /sbin/entrypoint.sh
@@ -104,6 +102,6 @@ RUN  chmod 755     /sbin/entrypoint.sh \
 
 EXPOSE 5432/tcp 9000/tcp 9001/tcp
 
-VOLUME ["/var/opt/game"] 
+VOLUME ["/var/opt/game"]
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]

@@ -6,6 +6,7 @@ pre_timout=$2
 sleep $pre_timout
 
 while :; do
-    ${VIRTUAL_ENV}/bin/python3 -u ${GAME_HOME}/src/$1/main.py
+    cd ${GAME_HOME}
+    ${VIRTUAL_ENV}/bin/python3 -um src.main
     sleep 3
 done
